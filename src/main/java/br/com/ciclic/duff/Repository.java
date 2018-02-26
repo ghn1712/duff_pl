@@ -1,5 +1,12 @@
 package br.com.ciclic.duff;
 
-public interface Repository {
+import java.util.List;
+import java.util.Optional;
 
+public interface Repository<T, U> {
+	List<T> getAll();
+
+	Optional<T> get(U key);
+
+	boolean save(T toSave);
 }

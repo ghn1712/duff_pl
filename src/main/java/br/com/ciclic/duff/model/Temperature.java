@@ -6,4 +6,6 @@ public interface Temperature {
 
 	double getMax();
 
+	void setTemperature(int min, int max);
+
 }

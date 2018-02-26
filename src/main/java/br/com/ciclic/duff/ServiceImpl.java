@@ -8,23 +8,26 @@ import static spark.Spark.put;
 import com.google.inject.Inject;
 
 public class ServiceImpl implements Service {
-	private static Controller controller;
+	private BeerController controller;
+	private static final String BEER_PATH_PARAM = "/:beer";
 
 	@Inject
-	public ServiceImpl(Controller controller) {
-		ServiceImpl.controller = controller;
+	public ServiceImpl(BeerController controller) {
+		this.controller = controller;
+		start();
 	}
 
-	public static void main(String[] args) {
-
+	@Override
+	public void start() {
 		path("/beers", () -> {
 			get("", (req, resp) -> controller.getAllBeers());
-			get("/:beer", (req, resp) -> controller.getBeer(req.params("beer")));
+			get(BEER_PATH_PARAM, (req, resp) -> controller.getBeer(req.params("beer")));
 			get("/types", (req, resp) -> controller.getTypes());
-			post("", (req, resp) -> controller.createBeer(req.body()));
-			put("/:beer", (req, resp) -> controller.createBeer(req.params("beer"), req.body()));
-			post("/:beer", (req, resp) -> controller.updateBeer(req.params("beer"), req.body()));
+			put(BEER_PATH_PARAM, (req, resp) -> controller.createBeer(req.params("beer"), req.body()));
+			post(BEER_PATH_PARAM, (req, resp) -> controller.updateBeer(req.params("beer"), req.body()));
 
 		});
+
 	}
+
 }

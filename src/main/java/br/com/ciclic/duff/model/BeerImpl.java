@@ -1,28 +1,28 @@
 package br.com.ciclic.duff.model;
 
 public class BeerImpl implements Beer {
+	String name;
+	BeerType beerType;
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	@Override
 	public BeerType getBeerType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.beerType;
 	}
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
+		this.name = name;
 
 	}
 
 	@Override
 	public void setBeerType(BeerType beerType) {
-		// TODO Auto-generated method stub
+		this.beerType = beerType;
 
 	}
 

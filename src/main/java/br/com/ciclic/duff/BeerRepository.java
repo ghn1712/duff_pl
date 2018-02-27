@@ -16,7 +16,7 @@ import com.google.inject.Inject;
 import br.com.ciclic.duff.model.BeerVO;
 
 public class BeerRepository implements Repository<BeerVO> {
-	Session session;
+	final Session session;
 	CassandraConnectionHandler cassandraConnectionHandler;
 	private static final String KEYSPACE;
 	private static final String TABLE;

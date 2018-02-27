@@ -8,13 +8,16 @@ public class CassandraConnectionHandlerImpl implements CassandraConnectionHandle
 
 	@Override
 	public Session connect(String contactPoint) {
-		return Cluster.builder().addContactPoint(contactPoint).build().connect();
+		if(this.session == null) {
+			this.session = Cluster.builder().addContactPoint(contactPoint).build().connect();
+		}
+		return this.session;
 	}
 
 	@Override
 	public void close() {
-		this.session.close();
-
+		if(this.session != null) 
+			this.session.close();
 	}
 
 }

@@ -8,6 +8,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 
@@ -26,7 +27,7 @@ public class BeerTypeRepository implements Repository<BeerTypeVO> {
 		KEYSPACE = "beerKeyspace";
 		TABLE = "beerType";
 		TABLEKEY = "typeName";
-		TABLEVIEW = "view";
+		TABLEVIEW = "beerTypeView";
 		serializer = new Gson();
 	}
 
@@ -41,7 +42,6 @@ public class BeerTypeRepository implements Repository<BeerTypeVO> {
 		List<BeerTypeVO> values = new ArrayList<>();
 		session.execute(getSelectAllPreparedStatement().bind())
 				.forEach(row -> values.add(serializer.fromJson(row.getString(TABLEVIEW), BeerTypeVO.class)));
-		;
 		return values;
 	}
 
@@ -70,14 +70,19 @@ public class BeerTypeRepository implements Repository<BeerTypeVO> {
 
 	}
 
+	@Override
+	public void truncate() {
+		session.execute(QueryBuilder.truncate(KEYSPACE, TABLE));
+	}
+
 	private PreparedStatement getDeletePreparedStatement() {
 		return session
-				.prepare(new SimpleStatement("DELETE FROM" + KEYSPACE + "." + TABLE + " WHERE " + TABLEKEY + " = ?"));
+				.prepare(new SimpleStatement("DELETE FROM " + KEYSPACE + "." + TABLE + " WHERE " + TABLEKEY + " = ?"));
 	}
 
 	private PreparedStatement getInsertPreparedStatement() {
 		return session.prepare(new SimpleStatement(
-				"INSERT INTO " + KEYSPACE + "." + TABLE + "(" + TABLEKEY + "," + TABLEVIEW + ")" + "VALUES ?, ?"));
+				"INSERT INTO " + KEYSPACE + "." + TABLE + "(" + TABLEKEY + "," + TABLEVIEW + ")" + "VALUES (?, ?)"));
 	}
 
 	private PreparedStatement getSelectPreparedStatement() {

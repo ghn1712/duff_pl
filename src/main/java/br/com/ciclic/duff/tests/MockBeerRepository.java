@@ -1,4 +1,4 @@
-package br.com.ciclic.duff.tests.utils;
+package br.com.ciclic.duff.tests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +39,11 @@ public class MockBeerRepository implements Repository<BeerVO> {
 	@Override
 	public void delete(String key) {
 		beerMap.remove(key);
+	}
+
+	@Override
+	public void truncate() {
+		 beerMap.clear();		
 	}
 
 }

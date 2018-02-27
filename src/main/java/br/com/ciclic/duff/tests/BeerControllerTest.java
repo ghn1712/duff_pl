@@ -19,8 +19,6 @@ import br.com.ciclic.duff.Repository;
 import br.com.ciclic.duff.model.BeerTypeVO;
 import br.com.ciclic.duff.model.BeerVO;
 import br.com.ciclic.duff.model.TemperatureVO;
-import br.com.ciclic.duff.tests.utils.MockBeerRepository;
-import br.com.ciclic.duff.tests.utils.MockBeerTypeRepository;
 
 public class BeerControllerTest {
 

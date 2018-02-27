@@ -22,6 +22,7 @@ public class BeerTypeRepositoryITCase {
 		beerTypeRepository = new BeerTypeRepository(new CassandraConnectionHandlerImpl());
 		key = "ipa";
 		beerType = new BeerTypeVO(key, new TemperatureVO(0, -1));
+		beerTypeRepository.truncate();
 	}
 
 	@Test
@@ -29,6 +30,7 @@ public class BeerTypeRepositoryITCase {
 		beerTypeRepository.save(beerType);
 		assertEquals(1, beerTypeRepository.getAll().size());
 		assertEquals(beerType, beerTypeRepository.get(key).get());
+		beerTypeRepository.truncate();
 	}
 
 	@Test
@@ -39,6 +41,6 @@ public class BeerTypeRepositoryITCase {
 		beerTypeRepository.delete(key);
 		assertEquals(0, beerTypeRepository.getAll().size());
 		assertFalse(beerTypeRepository.get(key).isPresent());
-
+		beerTypeRepository.truncate();
 	}
 }

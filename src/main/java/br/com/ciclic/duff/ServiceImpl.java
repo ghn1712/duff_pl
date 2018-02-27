@@ -17,6 +17,7 @@ import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 
 import br.com.ciclic.duff.model.BeerTypeVO;
+import br.com.ciclic.duff.model.BeerVO;
 import br.com.ciclic.duff.model.TemperatureVO;
 
 public class ServiceImpl implements Service {
@@ -63,7 +64,17 @@ public class ServiceImpl implements Service {
 	public void start() {
 		path("/beers", () -> {
 			get("", (req, resp) -> controller.getAllBeers());
-			get(BEER_PATH_PARAM, (req, resp) -> controller.getBeer(req.params("beer")));
+			get(BEER_PATH_PARAM, (req, resp) -> {
+				Optional<BeerVO> response = controller.getBeer(req.params("beer"));
+				if(response.isPresent()) {
+					resp.status(200);
+					resp.body(serializer.toJson(response.get()));
+				}
+				else { 
+					resp.status(404);
+				}
+				return resp;
+			});
 			get("/types", (req, resp) -> controller.getAllTypes());
 			put(BEER_PATH_PARAM, (req, resp) -> {
 

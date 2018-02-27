@@ -6,7 +6,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -25,7 +24,7 @@ public class ServiceITCase {
 
 	@Test
 	public void should_return_404_when_beer_does_not_exist() throws UnirestException {
-		HttpResponse<JsonNode> request = Unirest.get(url + "/{beerName}").routeParam("beerName", "test").asJson();
+		HttpResponse<String> request = Unirest.get(url + "/{beerName}").routeParam("beerName", "test").asString();
 		assertEquals(404, request.getStatus());
 	}
 }

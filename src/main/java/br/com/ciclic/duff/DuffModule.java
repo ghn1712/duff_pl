@@ -16,7 +16,7 @@ public class DuffModule extends AbstractModule {
 		bind(new TypeLiteral<Repository<BeerTypeVO>>() {
 		}).to(BeerTypeRepository.class);
 		bind(CassandraConnectionHandler.class).to(CassandraConnectionHandlerImpl.class);
-
+		bind(Service.class).to(ServiceImpl.class);
 	}
 
 }

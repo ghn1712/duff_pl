@@ -2,6 +2,10 @@ package br.com.ciclic.duff.model;
 
 public class BeerTypeImpl implements BeerType {
 
+	public BeerTypeImpl() {
+
+	}
+
 	@Override
 	public String getTypeName() {
 		// TODO Auto-generated method stub

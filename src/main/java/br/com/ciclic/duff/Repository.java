@@ -3,10 +3,11 @@ package br.com.ciclic.duff;
 import java.util.List;
 import java.util.Optional;
 
-public interface Repository<T, U> {
+public interface Repository<T> {
+
 	List<T> getAll();
 
-	Optional<T> get(U key);
+	Optional<T> get(String key);
 
-	boolean save(T toSave);
+	boolean save(String key, T view);
 }

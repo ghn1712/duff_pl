@@ -2,12 +2,11 @@ package br.com.ciclic.duff.model;
 
 public interface Beer {
 
-	String getName();
+	public String getName();
 
-	BeerType getBeerType();
+	public BeerType getBeerType();
 
-	void setName(String name);
+	public void setName(String name);
 
-	void setBeerType(BeerType beerType);
-
+	public void setBeerType(BeerType beerType);
 }

@@ -4,10 +4,6 @@ public class BeerImpl implements Beer {
 	String name;
 	BeerType beerType;
 
-	public BeerImpl() {
-
-	}
-
 	@Override
 	public String getName() {
 		return this.name;

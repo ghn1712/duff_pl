@@ -54,7 +54,7 @@ public class BeerControllerImpl implements BeerController {
 	}
 
 	@Override
-	public boolean updateTyoe(String beerType, BeerTypeVO beerTemperature) {
+	public boolean updateType(String beerType, BeerTypeVO beerTemperature) {
 		// TODO Auto-generated method stub
 		return false;
 	}

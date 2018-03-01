@@ -20,6 +20,6 @@ public interface BeerController {
 
 	boolean createType(String beerType, BeerTypeVO beerTemperature);
 
-	boolean updateTyoe(String beerType, BeerTypeVO beerTemperature);
+	boolean updateType(String beerType, BeerTypeVO beerTemperature);
 
 }

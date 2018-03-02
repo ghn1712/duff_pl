@@ -1,22 +1,15 @@
 package br.com.ciclic.duff.model;
 
 public class TemperatureVO {
-	private int min;
-	private int max;
+	private Integer min;
+	private Integer max;
 
-	public int getMin() {
+	public Integer getMin() {
 		return min;
 	}
 
-	public void setMin(int min) {
-		this.min = min;
-	}
-
-	public int getMax() {
+	public Integer getMax() {
 		return max;
 	}
 
-	public void setMax(int max) {
-		this.max = max;
-	}
 }

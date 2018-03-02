@@ -2,9 +2,9 @@ package br.com.ciclic.duff.model;
 
 public interface Temperature {
 
-	double getMin();
+	int getMin();
 
-	double getMax();
+	int getMax();
 
 	void setTemperature(int min, int max);
 

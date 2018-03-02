@@ -1,19 +1,17 @@
 package br.com.ciclic.duff.model;
 
 public class TemperatureImpl implements Temperature {
-	int min;
-	int max;
+	Integer min;
+	Integer max;
 
 	@Override
-	public double getMin() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getMin() {
+		return min;
 	}
 
 	@Override
-	public double getMax() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getMax() {
+		return max;
 	}
 
 	@Override

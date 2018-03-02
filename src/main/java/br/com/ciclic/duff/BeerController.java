@@ -18,8 +18,10 @@ public interface BeerController {
 
 	boolean updateBeer(String beerName, BeerVO beerInfo);
 
-	boolean createType(String beerType, BeerTypeVO beerTemperature);
+	boolean createType(String beerTypeName, BeerTypeVO beerTypeView);
 
-	boolean updateType(String beerType, BeerTypeVO beerTemperature);
+	boolean updateType(String beerTypeName, BeerTypeVO beerTypeView);
+
+	Optional<BeerTypeVO> getType(String beerTypeName);
 
 }

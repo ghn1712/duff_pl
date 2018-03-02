@@ -35,28 +35,52 @@ public class BeerControllerImpl implements BeerController {
 
 	@Override
 	public boolean createBeer(String beerName, BeerVO beerView) {
+		if (!checkBeerVO(beerView))
+			return false;
 		return beerRepository.save(beerName, beerView);
 
 	}
 
 	@Override
-	public boolean updateBeer(String beerName, BeerVO beerType) {
+	public boolean updateBeer(String beerName, BeerVO beerView) {
 		if (getBeer(beerName).isPresent()) {
-			return createBeer(beerName, beerType);
+			return createBeer(beerName, beerView);
 		}
 		return false;
 	}
 
 	@Override
-	public boolean createType(String beerType, BeerTypeVO beerTemperature) {
-		// TODO Auto-generated method stub
+	public boolean createType(String beerTypeName, BeerTypeVO beerTypeView) {
+		if (!checkBeerTypeVO(beerTypeView))
+			return false;
+		return beerTypeRepository.save(beerTypeName, beerTypeView);
+	}
+
+	@Override
+	public boolean updateType(String beerTypeName, BeerTypeVO beerTypeView) {
+		if (getType(beerTypeName).isPresent()) {
+			return createType(beerTypeName, beerTypeView);
+		}
 		return false;
 	}
 
 	@Override
-	public boolean updateType(String beerType, BeerTypeVO beerTemperature) {
-		// TODO Auto-generated method stub
-		return false;
+	public Optional<BeerTypeVO> getType(String beerTypeName) {
+		return beerTypeRepository.get(beerTypeName);
 	}
 
+	private static boolean checkBeerVO(BeerVO beerView) {
+		return beerView.getName() != null && beerView.getBeerType() != null
+				&& beerView.getBeerType().getTypeName() != null && beerView.getBeerType().getTemperature() != null
+				&& beerView.getBeerType().getTemperature().getMin() != null
+				&& beerView.getBeerType().getTemperature().getMax() != null && !beerView.getName().isEmpty()
+				&& !beerView.getBeerType().getTypeName().isEmpty();
+
+	}
+
+	private static boolean checkBeerTypeVO(BeerTypeVO beerType) {
+		return beerType.getTypeName() != null && beerType.getTemperature() != null
+				&& beerType.getTemperature().getMax() != null && beerType.getTemperature().getMin() != null
+				&& !beerType.getTypeName().isEmpty();
+	}
 }

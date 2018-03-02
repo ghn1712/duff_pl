@@ -8,16 +8,8 @@ public class BeerVO {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public BeerTypeVO getBeerType() {
 		return beerType;
-	}
-
-	public void setBeerType(BeerTypeVO beerType) {
-		this.beerType = beerType;
 	}
 
 }

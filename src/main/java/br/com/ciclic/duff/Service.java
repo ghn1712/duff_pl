@@ -60,7 +60,7 @@ public class Service {
 		path("/beers", () -> {
 			get("", (req, resp) -> controller.getAllBeers());
 			get(BEER_PATH_PARAM, (req, resp) -> controller.getBeer(req.params("beer")));
-			get("/types", (req, resp) -> controller.getTypes());
+			get("/types", (req, resp) -> controller.getAllTypes());
 			put(BEER_PATH_PARAM, (req, resp) -> {
 
 				String beerName = req.params("beer");

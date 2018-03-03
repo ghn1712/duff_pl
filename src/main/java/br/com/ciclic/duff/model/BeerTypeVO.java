@@ -16,17 +16,17 @@ public class BeerTypeVO {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == null || other.getClass() != BeerTypeVO.class)
+		if (!(other instanceof BeerTypeVO))
 			return false;
 		if (other == this)
 			return true;
 		BeerTypeVO toCompare = (BeerTypeVO) other;
-		return typeName.equals(toCompare.getTypeName());
+		return typeName.equals(toCompare.getTypeName()) && temperature.equals(toCompare.getTemperature());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.typeName);
+		return Objects.hashCode(this.typeName, this.temperature);
 	}
 
 }

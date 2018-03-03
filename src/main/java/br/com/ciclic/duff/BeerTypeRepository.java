@@ -64,6 +64,17 @@ public class BeerTypeRepository implements Repository<BeerTypeVO> {
 		return true;
 	}
 
+	@Override
+	public void delete(String key) {
+		session.execute(getDeletePreparedStatement().bind(key));
+
+	}
+
+	private PreparedStatement getDeletePreparedStatement() {
+		return session
+				.prepare(new SimpleStatement("DELETE FROM" + KEYSPACE + "." + TABLE + " WHERE " + TABLEKEY + " = ?"));
+	}
+
 	private PreparedStatement getInsertPreparedStatement() {
 		return session.prepare(new SimpleStatement(
 				"INSERT INTO " + KEYSPACE + "." + TABLE + "(" + TABLEKEY + "," + TABLEVIEW + ")" + "VALUES ?, ?"));
@@ -78,4 +89,5 @@ public class BeerTypeRepository implements Repository<BeerTypeVO> {
 		return session.prepare(
 				new SimpleStatement("SELECT " + TABLEKEY + "," + TABLEVIEW + " FROM " + KEYSPACE + "." + TABLE));
 	}
+
 }

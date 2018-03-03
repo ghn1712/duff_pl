@@ -12,7 +12,7 @@ public interface BeerController {
 
 	Optional<BeerVO> getBeer(String beerName);
 
-	List<BeerTypeVO> getTypes();
+	List<BeerTypeVO> getAllTypes();
 
 	boolean createBeer(String beerName, BeerVO beerInfo);
 
@@ -23,5 +23,9 @@ public interface BeerController {
 	boolean updateType(String beerTypeName, BeerTypeVO beerTypeView);
 
 	Optional<BeerTypeVO> getType(String beerTypeName);
+
+	void deleteBeer(String beerName);
+
+	void deleteBeerType(String beerTypeName);
 
 }

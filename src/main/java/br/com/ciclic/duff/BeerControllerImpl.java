@@ -29,7 +29,7 @@ public class BeerControllerImpl implements BeerController {
 	}
 
 	@Override
-	public List<BeerTypeVO> getTypes() {
+	public List<BeerTypeVO> getAllTypes() {
 		return beerTypeRepository.getAll();
 	}
 
@@ -69,6 +69,16 @@ public class BeerControllerImpl implements BeerController {
 		return beerTypeRepository.get(beerTypeName);
 	}
 
+	@Override
+	public void deleteBeer(String beerName) {
+		beerRepository.delete(beerName);
+	}
+
+	@Override
+	public void deleteBeerType(String beerTypeName) {
+		beerTypeRepository.delete(beerTypeName);
+	}
+
 	private static boolean checkBeerVO(BeerVO beerView) {
 		return beerView.getName() != null && beerView.getBeerType() != null
 				&& beerView.getBeerType().getTypeName() != null && beerView.getBeerType().getTemperature() != null
@@ -81,6 +91,8 @@ public class BeerControllerImpl implements BeerController {
 	private static boolean checkBeerTypeVO(BeerTypeVO beerType) {
 		return beerType.getTypeName() != null && beerType.getTemperature() != null
 				&& beerType.getTemperature().getMax() != null && beerType.getTemperature().getMin() != null
-				&& !beerType.getTypeName().isEmpty();
+				&& !beerType.getTypeName().isEmpty()
+				&& beerType.getTemperature().getMin() <= beerType.getTemperature().getMax();
 	}
+
 }

@@ -10,4 +10,6 @@ public interface Repository<T> {
 	Optional<T> get(String key);
 
 	boolean save(String key, T view);
+
+	void delete(String key);
 }

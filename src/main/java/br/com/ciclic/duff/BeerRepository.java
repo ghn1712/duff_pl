@@ -9,6 +9,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 
 import br.com.ciclic.duff.model.BeerVO;
@@ -57,11 +58,20 @@ public class BeerRepository implements Repository<BeerVO> {
 	public boolean save(String key, BeerVO view) {
 		try {
 			session.execute(getInsertPreparedStatement().bind(key, serializer.toJson(view)));
-		} catch (Exception e) {
+		} catch (JsonParseException e) {
 			return false;
 		}
 		return true;
+	}
 
+	@Override
+	public void delete(String key) {
+		session.execute(getDeletePreparedStatement().bind(key));
+	}
+
+	private PreparedStatement getDeletePreparedStatement() {
+		return session
+				.prepare(new SimpleStatement("DELETE FROM " + KEYSPACE + "." + TABLE + " WHERE " + TABLEKEY + " = ?"));
 	}
 
 	private PreparedStatement getSelectPreparedStatement() {

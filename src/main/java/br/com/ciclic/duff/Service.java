@@ -1,6 +1,7 @@
 package br.com.ciclic.duff;
 
 import static spark.Spark.after;
+import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.path;
 import static spark.Spark.post;
@@ -15,7 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import br.com.ciclic.duff.model.BeerTypeVO;
-import br.com.ciclic.duff.model.BeerVO;
+import br.com.ciclic.duff.model.TemperatureVO;
 
 public class Service {
 
@@ -29,25 +30,23 @@ public class Service {
 		serializer = new Gson();
 		BEER_PATH_PARAM = "/:beer";
 		INVALID_JSON_BODY = "{\"message\": \"invalid json\"}";
-		BEER_TYPE_PATH_PARAM = "/:beerType";
+		BEER_TYPE_PATH_PARAM = "/types/:beerType";
 	}
 
-	private static Optional<BeerVO> getBeerVO(String name, String view) {
+	private static Optional<TemperatureVO> getTemperatureVO(String view) {
 
 		try {
 			JSONObject json = new JSONObject(view);
-			json.putOnce("name", name);
-			BeerVO beerVO = serializer.fromJson(json.toString(), BeerVO.class);
-			return Optional.of(beerVO);
+			TemperatureVO temperatureVO = serializer.fromJson(json.toString(), TemperatureVO.class);
+			return Optional.of(temperatureVO);
 		} catch (JsonParseException | JSONException e) {
 			return Optional.empty();
 		}
 	}
 
-	private static Optional<BeerTypeVO> getBeerTypeVO(String typeName, String view) {
+	private static Optional<BeerTypeVO> getBeerTypeVO(String view) {
 		try {
 			JSONObject json = new JSONObject(view);
-			json.putOnce("typeName", typeName);
 			BeerTypeVO beerTypeVO = serializer.fromJson(json.toString(), BeerTypeVO.class);
 			return Optional.of(beerTypeVO);
 		} catch (JSONException | JsonParseException e) {
@@ -64,7 +63,7 @@ public class Service {
 			put(BEER_PATH_PARAM, (req, resp) -> {
 
 				String beerName = req.params("beer");
-				Optional<BeerVO> beerVO = getBeerVO(beerName, req.body());
+				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
 				if (beerVO.isPresent()) {
 					return controller.createBeer(beerName, beerVO.get());
 				}
@@ -76,7 +75,7 @@ public class Service {
 			post(BEER_PATH_PARAM, (req, resp) -> {
 
 				String beerName = req.params("beer");
-				Optional<BeerVO> beerVO = getBeerVO(beerName, req.body());
+				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
 				if (beerVO.isPresent()) {
 					return controller.updateBeer(beerName, beerVO.get());
 				}
@@ -84,10 +83,14 @@ public class Service {
 				resp.body(INVALID_JSON_BODY);
 				return resp;
 			});
+			delete(BEER_PATH_PARAM, (req, resp) -> {
+				controller.deleteBeer(req.params("beer"));
+				return resp;
+			});
 			put(BEER_TYPE_PATH_PARAM, (req, resp) -> {
 
 				String beerTypeName = req.params("beerType");
-				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(beerTypeName, req.body());
+				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
 				if (beerTypeVO.isPresent()) {
 					return controller.createType(beerTypeName, beerTypeVO.get());
 				}
@@ -99,7 +102,7 @@ public class Service {
 			post(BEER_TYPE_PATH_PARAM, (req, resp) -> {
 
 				String beerTypeName = req.params("beerType");
-				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(beerTypeName, req.body());
+				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
 				if (beerTypeVO.isPresent()) {
 					return controller.updateType(beerTypeName, beerTypeVO.get());
 				}
@@ -108,6 +111,10 @@ public class Service {
 				return resp;
 			});
 
+		});
+		delete(BEER_PATH_PARAM, (req, resp) -> {
+			controller.deleteBeerType(req.params("beerType"));
+			return resp;
 		});
 
 		after((req, resp) -> resp.type("application/json"));

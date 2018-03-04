@@ -6,6 +6,11 @@ public class TemperatureVO {
 	private Integer min;
 	private Integer max;
 
+	public TemperatureVO(Integer max, Integer min) {
+		this.max = max;
+		this.min = min;
+	}
+
 	public Integer getMin() {
 		return min;
 	}

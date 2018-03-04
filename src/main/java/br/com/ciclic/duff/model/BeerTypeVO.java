@@ -6,6 +6,11 @@ public class BeerTypeVO {
 	private String typeName;
 	private TemperatureVO temperature;
 
+	public BeerTypeVO(String typeName, TemperatureVO beerTypeView) {
+		this.typeName = typeName;
+		this.temperature = new TemperatureVO(beerTypeView.getMax(), beerTypeView.getMin());
+	}
+
 	public String getTypeName() {
 		return typeName;
 	}

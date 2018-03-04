@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 
 import br.com.ciclic.duff.model.BeerTypeVO;
 import br.com.ciclic.duff.model.BeerVO;
+import br.com.ciclic.duff.model.TemperatureVO;
 
 public class BeerControllerImpl implements BeerController {
 	Repository<BeerVO> beerRepository;
@@ -34,15 +35,19 @@ public class BeerControllerImpl implements BeerController {
 	}
 
 	@Override
-	public boolean createBeer(String beerName, BeerVO beerView) {
-		if (!checkBeerVO(beerView))
+	public boolean createBeer(String beerName, BeerTypeVO beerView) {
+		if (!checkBeer(beerName, beerView))
 			return false;
-		return beerRepository.save(beerName, beerView);
+		Optional<BeerTypeVO> type = getType(beerView.getTypeName());
+		if (type.isPresent()) {
+			return beerRepository.save(beerName, new BeerVO(beerName, type.get()));
+		}
+		return false;
 
 	}
 
 	@Override
-	public boolean updateBeer(String beerName, BeerVO beerView) {
+	public boolean updateBeer(String beerName, BeerTypeVO beerView) {
 		if (getBeer(beerName).isPresent()) {
 			return createBeer(beerName, beerView);
 		}
@@ -50,14 +55,14 @@ public class BeerControllerImpl implements BeerController {
 	}
 
 	@Override
-	public boolean createType(String beerTypeName, BeerTypeVO beerTypeView) {
-		if (!checkBeerTypeVO(beerTypeView))
+	public boolean createType(String beerTypeName, TemperatureVO beerTypeView) {
+		if (!checkBeerType(beerTypeName, beerTypeView))
 			return false;
-		return beerTypeRepository.save(beerTypeName, beerTypeView);
+		return beerTypeRepository.save(beerTypeName, new BeerTypeVO(beerTypeName, beerTypeView));
 	}
 
 	@Override
-	public boolean updateType(String beerTypeName, BeerTypeVO beerTypeView) {
+	public boolean updateType(String beerTypeName, TemperatureVO beerTypeView) {
 		if (getType(beerTypeName).isPresent()) {
 			return createType(beerTypeName, beerTypeView);
 		}
@@ -79,20 +84,15 @@ public class BeerControllerImpl implements BeerController {
 		beerTypeRepository.delete(beerTypeName);
 	}
 
-	private static boolean checkBeerVO(BeerVO beerView) {
-		return beerView.getName() != null && beerView.getBeerType() != null
-				&& beerView.getBeerType().getTypeName() != null && beerView.getBeerType().getTemperature() != null
-				&& beerView.getBeerType().getTemperature().getMin() != null
-				&& beerView.getBeerType().getTemperature().getMax() != null && !beerView.getName().isEmpty()
-				&& !beerView.getBeerType().getTypeName().isEmpty();
+	private static boolean checkBeer(String beerName, BeerTypeVO beerView) {
+		return beerName != null && !beerName.trim().isEmpty() && beerView != null && beerView.getTypeName() != null
+				&& !beerView.getTypeName().trim().isEmpty();
 
 	}
 
-	private static boolean checkBeerTypeVO(BeerTypeVO beerType) {
-		return beerType.getTypeName() != null && beerType.getTemperature() != null
-				&& beerType.getTemperature().getMax() != null && beerType.getTemperature().getMin() != null
-				&& !beerType.getTypeName().isEmpty()
-				&& beerType.getTemperature().getMin() <= beerType.getTemperature().getMax();
+	private static boolean checkBeerType(String beerTypeName, TemperatureVO beerType) {
+		return beerTypeName != null && beerType != null && beerType.getMax() != null && beerType.getMin() != null
+				&& !beerTypeName.trim().isEmpty() && beerType.getMin() <= beerType.getMax();
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import br.com.ciclic.duff.model.BeerTypeVO;
 import br.com.ciclic.duff.model.BeerVO;
+import br.com.ciclic.duff.model.TemperatureVO;
 
 public interface BeerController {
 
@@ -14,13 +15,13 @@ public interface BeerController {
 
 	List<BeerTypeVO> getAllTypes();
 
-	boolean createBeer(String beerName, BeerVO beerInfo);
+	boolean createBeer(String beerName, BeerTypeVO beerView);
 
-	boolean updateBeer(String beerName, BeerVO beerInfo);
+	boolean updateBeer(String beerName, BeerTypeVO beerView);
 
-	boolean createType(String beerTypeName, BeerTypeVO beerTypeView);
+	boolean createType(String beerTypeName, TemperatureVO beerTypeView);
 
-	boolean updateType(String beerTypeName, BeerTypeVO beerTypeView);
+	boolean updateType(String beerTypeName, TemperatureVO beerTypeView);
 
 	Optional<BeerTypeVO> getType(String beerTypeName);
 

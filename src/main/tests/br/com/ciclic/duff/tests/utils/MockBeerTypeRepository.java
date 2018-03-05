@@ -31,8 +31,8 @@ public class MockBeerTypeRepository implements Repository<BeerTypeVO> {
 	}
 
 	@Override
-	public boolean save(String key, BeerTypeVO view) {
-		beerTypeMap.put(key, view);
+	public boolean save(BeerTypeVO view) {
+		beerTypeMap.put(view.getTypeName(), view);
 		return true;
 	}
 

@@ -40,7 +40,7 @@ public class BeerControllerImpl implements BeerController {
 			return false;
 		Optional<BeerTypeVO> type = getType(beerView.getTypeName());
 		if (type.isPresent()) {
-			return beerRepository.save(beerName, new BeerVO(beerName, type.get()));
+			return beerRepository.save(new BeerVO(beerName, type.get()));
 		}
 		return false;
 
@@ -58,7 +58,7 @@ public class BeerControllerImpl implements BeerController {
 	public boolean createType(String beerTypeName, TemperatureVO beerTypeView) {
 		if (!checkBeerType(beerTypeName, beerTypeView))
 			return false;
-		return beerTypeRepository.save(beerTypeName, new BeerTypeVO(beerTypeName, beerTypeView));
+		return beerTypeRepository.save(new BeerTypeVO(beerTypeName, beerTypeView));
 	}
 
 	@Override

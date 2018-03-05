@@ -54,8 +54,7 @@ public class Service {
 		}
 	}
 
-	public static void main(String[] args) {
-
+	private static void start() {
 		path("/beers", () -> {
 			get("", (req, resp) -> controller.getAllBeers());
 			get(BEER_PATH_PARAM, (req, resp) -> controller.getBeer(req.params("beer")));
@@ -120,4 +119,7 @@ public class Service {
 		after((req, resp) -> resp.type("application/json"));
 	}
 
+	public static void main(String[] args) {
+		start();
+	}
 }

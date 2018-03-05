@@ -1,12 +1,14 @@
 package br.com.ciclic.duff;
 
+import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
 public class CassandraConnectionHandlerImpl implements CassandraConnectionHandler {
 	Session session;
 
-	public CassandraConnectionHandlerImpl() {
-		this.session = connect("127.0.0.1");
+	@Override
+	public Session connect(String contactPoint) {
+		return Cluster.builder().addContactPoint(contactPoint).build().connect();
 	}
 
 	@Override

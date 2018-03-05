@@ -55,9 +55,9 @@ public class BeerRepository implements Repository<BeerVO> {
 	}
 
 	@Override
-	public boolean save(String key, BeerVO view) {
+	public boolean save(BeerVO view) {
 		try {
-			session.execute(getInsertPreparedStatement().bind(key, serializer.toJson(view)));
+			session.execute(getInsertPreparedStatement().bind(view.getName(), serializer.toJson(view)));
 		} catch (JsonParseException e) {
 			return false;
 		}

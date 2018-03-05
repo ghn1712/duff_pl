@@ -55,9 +55,9 @@ public class BeerTypeRepository implements Repository<BeerTypeVO> {
 	}
 
 	@Override
-	public boolean save(String key, BeerTypeVO view) {
+	public boolean save(BeerTypeVO view) {
 		try {
-			session.execute(getInsertPreparedStatement().bind(key, serializer.toJson(view)));
+			session.execute(getInsertPreparedStatement().bind(view.getTypeName(), serializer.toJson(view)));
 		} catch (Exception e) {
 			return false;
 		}

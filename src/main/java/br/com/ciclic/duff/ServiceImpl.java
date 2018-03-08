@@ -1,14 +1,17 @@
 package br.com.ciclic.duff;
 
-import static spark.Spark.after;
 import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.path;
 import static spark.Spark.post;
 import static spark.Spark.put;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jetty.http.HttpStatus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,16 +26,20 @@ import br.com.ciclic.duff.model.TemperatureVO;
 public class ServiceImpl implements Service {
 
 	private final BeerController controller;
-	private static final String BEER_PATH_PARAM;
+	private static final String BEER_PATH_URI;
 	private static final String INVALID_JSON_BODY;
 	private static final Gson serializer;
+	private static final String BEER_TYPE_PATH_URI;
 	private static final String BEER_TYPE_PATH_PARAM;
+	private static final String BEER_PATH_PARAM;
 
 	static {
 		serializer = new Gson();
-		BEER_PATH_PARAM = "/:beer";
+		BEER_PATH_URI = "/:beer";
 		INVALID_JSON_BODY = "{\"message\": \"invalid json\"}";
-		BEER_TYPE_PATH_PARAM = "/types/:beerType";
+		BEER_TYPE_PATH_URI = "/types/:beerType";
+		BEER_PATH_PARAM = "beer";
+		BEER_TYPE_PATH_PARAM = "beerType";
 	}
 
 	@Inject
@@ -63,77 +70,138 @@ public class ServiceImpl implements Service {
 
 	public void start() {
 		path("/beers", () -> {
-			get("", (req, resp) -> controller.getAllBeers());
-			get(BEER_PATH_PARAM, (req, resp) -> {
-				Optional<BeerVO> response = controller.getBeer(req.params("beer"));
-				if(response.isPresent()) {
-					resp.status(200);
+
+			get("", (req, resp) -> {
+				List<BeerVO> types = controller.getAllBeers();
+				if (types.isEmpty()) {
+					resp.status(HttpStatus.NO_CONTENT_204);
+					resp.body("");
+				} else {
+					List<String> response = new ArrayList<>();
+					types.forEach(type -> response.add(serializer.toJson(type)));
+					resp.status(HttpStatus.OK_200);
+					resp.body(new JSONArray(response).toString());
+				}
+				return resp;
+			});
+
+			get(BEER_PATH_URI, (req, resp) -> {
+				Optional<BeerVO> response = controller.getBeer(req.params(BEER_PATH_PARAM));
+				if (response.isPresent()) {
+					resp.status(HttpStatus.OK_200);
 					resp.body(serializer.toJson(response.get()));
-				}
-				else { 
-					resp.status(404);
+				} else {
+					resp.status(HttpStatus.NOT_FOUND_404);
+					resp.body("");
 				}
 				return resp;
 			});
-			get("/types", (req, resp) -> controller.getAllTypes());
-			put(BEER_PATH_PARAM, (req, resp) -> {
 
-				String beerName = req.params("beer");
+			get("/types", (req, resp) -> {
+				List<BeerTypeVO> types = controller.getAllTypes();
+				if (types.isEmpty()) {
+					resp.status(HttpStatus.NO_CONTENT_204);
+					resp.body("");
+				} else {
+					List<String> response = new ArrayList<>();
+					types.forEach(type -> response.add(serializer.toJson(type)));
+					resp.status(HttpStatus.OK_200);
+					resp.body(new JSONArray(response).toString());
+				}
+				return resp;
+			});
+
+			get(BEER_TYPE_PATH_URI, (req, resp) -> {
+				Optional<BeerTypeVO> response = controller.getType(req.params(BEER_TYPE_PATH_PARAM));
+				if (response.isPresent()) {
+					resp.status(HttpStatus.OK_200);
+					resp.body(serializer.toJson(response.get()));
+				} else {
+					resp.status(HttpStatus.NOT_FOUND_404);
+					resp.body("");
+				}
+				return resp;
+			});
+
+			put(BEER_PATH_URI, (req, resp) -> {
+
+				String beerName = req.params(BEER_PATH_PARAM);
+				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
+				if (beerVO.isPresent() && controller.createBeer(beerName, beerVO.get())) {
+					resp.status(HttpStatus.NO_CONTENT_204);
+					resp.body("");
+					return resp;
+				}
+				resp.status(HttpStatus.BAD_REQUEST_400);
+				resp.body(INVALID_JSON_BODY);
+				return resp;
+
+			});
+
+			post(BEER_PATH_URI, (req, resp) -> {
+
+				String beerName = req.params(BEER_PATH_PARAM);
 				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
 				if (beerVO.isPresent()) {
-					return controller.createBeer(beerName, beerVO.get());
+					if (controller.updateBeer(beerName, beerVO.get())) {
+						resp.status(HttpStatus.NO_CONTENT_204);
+					} else {
+						resp.status(HttpStatus.FORBIDDEN_403);
+					}
+					resp.body("");
+					return resp;
 				}
-				resp.status(400);
+				resp.status(HttpStatus.BAD_REQUEST_400);
+				resp.body(INVALID_JSON_BODY);
+				return resp;
+			});
+
+			delete(BEER_PATH_URI, (req, resp) -> {
+				controller.deleteBeer(req.params(BEER_PATH_PARAM));
+				resp.status(HttpStatus.NO_CONTENT_204);
+				return resp;
+			});
+
+			put(BEER_TYPE_PATH_URI, (req, resp) -> {
+
+				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
+				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
+				if (beerTypeVO.isPresent() && controller.createType(beerTypeName, beerTypeVO.get())) {
+					resp.status(HttpStatus.NO_CONTENT_204);
+					resp.body("");
+					return resp;
+				}
+				resp.status(HttpStatus.BAD_REQUEST_400);
 				resp.body(INVALID_JSON_BODY);
 				return resp;
 
 			});
-			post(BEER_PATH_PARAM, (req, resp) -> {
 
-				String beerName = req.params("beer");
-				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
-				if (beerVO.isPresent()) {
-					return controller.updateBeer(beerName, beerVO.get());
-				}
-				resp.status(400);
-				resp.body(INVALID_JSON_BODY);
-				return resp;
-			});
-			delete(BEER_PATH_PARAM, (req, resp) -> {
-				controller.deleteBeer(req.params("beer"));
-				return resp;
-			});
-			put(BEER_TYPE_PATH_PARAM, (req, resp) -> {
+			post(BEER_TYPE_PATH_URI, (req, resp) -> {
 
-				String beerTypeName = req.params("beerType");
+				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
 				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
 				if (beerTypeVO.isPresent()) {
-					return controller.createType(beerTypeName, beerTypeVO.get());
+					if (controller.updateType(beerTypeName, beerTypeVO.get())) {
+						resp.status(HttpStatus.NO_CONTENT_204);
+					} else {
+						resp.status(HttpStatus.FORBIDDEN_403);
+					}
+					resp.body("");
+					return resp;
 				}
-				resp.status(400);
+				resp.status(HttpStatus.BAD_REQUEST_400);
 				resp.body(INVALID_JSON_BODY);
 				return resp;
-
 			});
-			post(BEER_TYPE_PATH_PARAM, (req, resp) -> {
 
-				String beerTypeName = req.params("beerType");
-				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
-				if (beerTypeVO.isPresent()) {
-					return controller.updateType(beerTypeName, beerTypeVO.get());
-				}
-				resp.status(400);
-				resp.body(INVALID_JSON_BODY);
+			delete(BEER_TYPE_PATH_URI, (req, resp) -> {
+				controller.deleteBeerType(req.params(BEER_TYPE_PATH_PARAM));
+				resp.status(HttpStatus.NO_CONTENT_204);
 				return resp;
 			});
 
 		});
-		delete(BEER_PATH_PARAM, (req, resp) -> {
-			controller.deleteBeerType(req.params("beerType"));
-			return resp;
-		});
-
-		after((req, resp) -> resp.type("application/json"));
 	}
 
 }

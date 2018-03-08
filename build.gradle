@@ -12,6 +12,7 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.8.2'
 	compile 'com.datastax.cassandra:cassandra-driver-core:3.4.0'
 	compile 'org.json:json:20180130'
+	compile 'com.mashape.unirest:unirest-java:1.4.9'
 
     testCompile 'junit:junit:4.12'
 }

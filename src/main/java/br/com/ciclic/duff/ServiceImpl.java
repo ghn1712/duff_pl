@@ -37,7 +37,7 @@ public class ServiceImpl implements Service {
 		serializer = new Gson();
 		BEER_PATH_URI = "/:beer";
 		INVALID_JSON_BODY = "{\"message\": \"invalid json\"}";
-		BEER_TYPE_PATH_URI = "/types/:beerType";
+		BEER_TYPE_PATH_URI = "/:beerType";
 		BEER_PATH_PARAM = "beer";
 		BEER_TYPE_PATH_PARAM = "beerType";
 	}
@@ -97,7 +97,49 @@ public class ServiceImpl implements Service {
 				return resp;
 			});
 
-			get("/types", (req, resp) -> {
+			put(BEER_PATH_URI, (req, resp) -> {
+
+				String beerName = req.params(BEER_PATH_PARAM);
+				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(req.body());
+				if (beerTypeVO.isPresent() && controller.createBeer(beerName, beerTypeVO.get())) {
+					resp.status(HttpStatus.NO_CONTENT_204);
+					resp.body("");
+					return resp;
+				}
+				resp.status(HttpStatus.BAD_REQUEST_400);
+				resp.body(INVALID_JSON_BODY);
+				return resp;
+
+			});
+
+			post(BEER_PATH_URI, (req, resp) -> {
+
+				String beerName = req.params(BEER_PATH_PARAM);
+				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(req.body());
+				if (beerTypeVO.isPresent()) {
+					if (controller.updateBeer(beerName, beerTypeVO.get())) {
+						resp.status(HttpStatus.NO_CONTENT_204);
+					} else {
+						resp.status(HttpStatus.BAD_REQUEST_400);
+					}
+					resp.body("");
+					return resp;
+				}
+				resp.status(HttpStatus.BAD_REQUEST_400);
+				resp.body(INVALID_JSON_BODY);
+				return resp;
+			});
+
+			delete(BEER_PATH_URI, (req, resp) -> {
+				controller.deleteBeer(req.params(BEER_PATH_PARAM));
+				resp.status(HttpStatus.NO_CONTENT_204);
+				return resp;
+			});
+
+		});
+
+		path("/beerTypes", () -> {
+			get("", (req, resp) -> {
 				List<BeerTypeVO> types = controller.getAllTypes();
 				if (types.isEmpty()) {
 					resp.status(HttpStatus.NO_CONTENT_204);
@@ -122,48 +164,14 @@ public class ServiceImpl implements Service {
 				}
 				return resp;
 			});
-
-			put(BEER_PATH_URI, (req, resp) -> {
-
-				String beerName = req.params(BEER_PATH_PARAM);
-				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(req.body());
-				if (beerTypeVO.isPresent() && controller.createBeer(beerName, beerTypeVO.get())) {
-					resp.status(HttpStatus.NO_CONTENT_204);
-					resp.body("");
-					return resp;
-				}
-				resp.status(HttpStatus.BAD_REQUEST_400);
-				resp.body(INVALID_JSON_BODY);
-				return resp;
-
-			});
-
-			post(BEER_PATH_URI, (req, resp) -> {
-
-				String beerName = req.params(BEER_PATH_PARAM);
-				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(req.body());
-				if (beerTypeVO.isPresent()) {
-					if (controller.updateBeer(beerName, beerTypeVO.get())) {
-						resp.status(HttpStatus.NO_CONTENT_204);
-					} else {
-						resp.status(HttpStatus.FORBIDDEN_403);
-					}
-					resp.body("");
-					return resp;
-				}
-				resp.status(HttpStatus.BAD_REQUEST_400);
-				resp.body(INVALID_JSON_BODY);
-				return resp;
-			});
-
-			delete(BEER_PATH_URI, (req, resp) -> {
-				controller.deleteBeer(req.params(BEER_PATH_PARAM));
+			delete(BEER_TYPE_PATH_URI, (req, resp) -> {
+				controller.deleteBeerType(req.params(BEER_TYPE_PATH_PARAM));
 				resp.status(HttpStatus.NO_CONTENT_204);
 				return resp;
 			});
-
+			
 			put(BEER_TYPE_PATH_URI, (req, resp) -> {
-
+				
 				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
 				Optional<TemperatureVO> temperatureVO = getTemperatureVO(req.body());
 				if (temperatureVO.isPresent() && controller.createType(beerTypeName, temperatureVO.get())) {
@@ -174,18 +182,18 @@ public class ServiceImpl implements Service {
 				resp.status(HttpStatus.BAD_REQUEST_400);
 				resp.body(INVALID_JSON_BODY);
 				return resp;
-
+				
 			});
-
+			
 			post(BEER_TYPE_PATH_URI, (req, resp) -> {
-
+				
 				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
 				Optional<TemperatureVO> temperatureVO = getTemperatureVO(req.body());
 				if (temperatureVO.isPresent()) {
 					if (controller.updateType(beerTypeName, temperatureVO.get())) {
 						resp.status(HttpStatus.NO_CONTENT_204);
 					} else {
-						resp.status(HttpStatus.FORBIDDEN_403);
+						resp.status(HttpStatus.BAD_REQUEST_400);
 					}
 					resp.body("");
 					return resp;
@@ -194,14 +202,8 @@ public class ServiceImpl implements Service {
 				resp.body(INVALID_JSON_BODY);
 				return resp;
 			});
-
-			delete(BEER_TYPE_PATH_URI, (req, resp) -> {
-				controller.deleteBeerType(req.params(BEER_TYPE_PATH_PARAM));
-				resp.status(HttpStatus.NO_CONTENT_204);
-				return resp;
-			});
-
 		});
+
 	}
 
 }

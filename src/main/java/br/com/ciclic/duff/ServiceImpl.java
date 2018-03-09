@@ -126,8 +126,8 @@ public class ServiceImpl implements Service {
 			put(BEER_PATH_URI, (req, resp) -> {
 
 				String beerName = req.params(BEER_PATH_PARAM);
-				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
-				if (beerVO.isPresent() && controller.createBeer(beerName, beerVO.get())) {
+				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(req.body());
+				if (beerTypeVO.isPresent() && controller.createBeer(beerName, beerTypeVO.get())) {
 					resp.status(HttpStatus.NO_CONTENT_204);
 					resp.body("");
 					return resp;
@@ -141,9 +141,9 @@ public class ServiceImpl implements Service {
 			post(BEER_PATH_URI, (req, resp) -> {
 
 				String beerName = req.params(BEER_PATH_PARAM);
-				Optional<BeerTypeVO> beerVO = getBeerTypeVO(req.body());
-				if (beerVO.isPresent()) {
-					if (controller.updateBeer(beerName, beerVO.get())) {
+				Optional<BeerTypeVO> beerTypeVO = getBeerTypeVO(req.body());
+				if (beerTypeVO.isPresent()) {
+					if (controller.updateBeer(beerName, beerTypeVO.get())) {
 						resp.status(HttpStatus.NO_CONTENT_204);
 					} else {
 						resp.status(HttpStatus.FORBIDDEN_403);
@@ -165,8 +165,8 @@ public class ServiceImpl implements Service {
 			put(BEER_TYPE_PATH_URI, (req, resp) -> {
 
 				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
-				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
-				if (beerTypeVO.isPresent() && controller.createType(beerTypeName, beerTypeVO.get())) {
+				Optional<TemperatureVO> temperatureVO = getTemperatureVO(req.body());
+				if (temperatureVO.isPresent() && controller.createType(beerTypeName, temperatureVO.get())) {
 					resp.status(HttpStatus.NO_CONTENT_204);
 					resp.body("");
 					return resp;
@@ -180,9 +180,9 @@ public class ServiceImpl implements Service {
 			post(BEER_TYPE_PATH_URI, (req, resp) -> {
 
 				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
-				Optional<TemperatureVO> beerTypeVO = getTemperatureVO(req.body());
-				if (beerTypeVO.isPresent()) {
-					if (controller.updateType(beerTypeName, beerTypeVO.get())) {
+				Optional<TemperatureVO> temperatureVO = getTemperatureVO(req.body());
+				if (temperatureVO.isPresent()) {
+					if (controller.updateType(beerTypeName, temperatureVO.get())) {
 						resp.status(HttpStatus.NO_CONTENT_204);
 					} else {
 						resp.status(HttpStatus.FORBIDDEN_403);

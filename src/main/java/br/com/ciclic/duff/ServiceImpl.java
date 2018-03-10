@@ -82,7 +82,7 @@ public class ServiceImpl implements Service {
 					resp.status(HttpStatus.OK_200);
 					resp.body(new JSONArray(response).toString());
 				}
-				return resp;
+				return resp.body();
 			});
 
 			get(BEER_PATH_URI, (req, resp) -> {
@@ -94,7 +94,7 @@ public class ServiceImpl implements Service {
 					resp.status(HttpStatus.NOT_FOUND_404);
 					resp.body("");
 				}
-				return resp;
+				return resp.body();
 			});
 
 			put(BEER_PATH_URI, (req, resp) -> {
@@ -150,7 +150,7 @@ public class ServiceImpl implements Service {
 					resp.status(HttpStatus.OK_200);
 					resp.body(new JSONArray(response).toString());
 				}
-				return resp;
+				return resp.body();
 			});
 
 			get(BEER_TYPE_PATH_URI, (req, resp) -> {
@@ -162,16 +162,17 @@ public class ServiceImpl implements Service {
 					resp.status(HttpStatus.NOT_FOUND_404);
 					resp.body("");
 				}
-				return resp;
+				return resp.body();
 			});
+
 			delete(BEER_TYPE_PATH_URI, (req, resp) -> {
 				controller.deleteBeerType(req.params(BEER_TYPE_PATH_PARAM));
 				resp.status(HttpStatus.NO_CONTENT_204);
 				return resp;
 			});
-			
+
 			put(BEER_TYPE_PATH_URI, (req, resp) -> {
-				
+
 				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
 				Optional<TemperatureVO> temperatureVO = getTemperatureVO(req.body());
 				if (temperatureVO.isPresent() && controller.createType(beerTypeName, temperatureVO.get())) {
@@ -182,11 +183,11 @@ public class ServiceImpl implements Service {
 				resp.status(HttpStatus.BAD_REQUEST_400);
 				resp.body(INVALID_JSON_BODY);
 				return resp;
-				
+
 			});
-			
+
 			post(BEER_TYPE_PATH_URI, (req, resp) -> {
-				
+
 				String beerTypeName = req.params(BEER_TYPE_PATH_PARAM);
 				Optional<TemperatureVO> temperatureVO = getTemperatureVO(req.body());
 				if (temperatureVO.isPresent()) {

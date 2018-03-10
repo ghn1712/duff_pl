@@ -39,6 +39,8 @@ public class ServiceITCase {
 		beerRepo = InjectorHelper.getInjector().getInstance(Key.get(new TypeLiteral<Repository<BeerVO>>() {
 		}));
 		service.start();
+		beerRepo.truncate();
+		beerTypeRepo.truncate();
 	}
 
 	@Test
@@ -70,6 +72,32 @@ public class ServiceITCase {
 	}
 
 	@Test
+	public void should_return_200_when_beer_type_exists() throws UnirestException {
+		HttpResponse<String> putBeerType = Unirest.put(beerTypeUrl + "/{beerTypeName}")
+				.routeParam("beerTypeName", "ipa").body(serializer.toJson(new TemperatureVO(10, 0))).asString();
+		assertEquals(HttpStatus.NO_CONTENT_204, putBeerType.getStatus());
+
+		HttpResponse<String> request = Unirest.get(beerTypeUrl).asString();
+		assertEquals(HttpStatus.OK_200, request.getStatus());
+		System.out.println(request.getBody());
+	}
+
+	@Test
+	public void should_return_200_when_beer_exists() throws UnirestException {
+		HttpResponse<String> putBeerType = Unirest.put(beerTypeUrl + "/{beerTypeName}")
+				.routeParam("beerTypeName", "ipa").body(serializer.toJson(new TemperatureVO(10, 0))).asString();
+		assertEquals(HttpStatus.NO_CONTENT_204, putBeerType.getStatus());
+
+		HttpResponse<String> putBeer = Unirest.put(beerUrl + "/{beerName}").routeParam("beerName", "skol")
+				.body(serializer.toJson(new BeerTypeVO("ipa"))).asString();
+		assertEquals(HttpStatus.NO_CONTENT_204, putBeer.getStatus());
+
+		HttpResponse<String> request = Unirest.get(beerUrl).asString();
+		assertEquals(HttpStatus.OK_200, request.getStatus());
+		System.out.println(request.getBody());
+	}
+
+	@Test
 	public void should_return_204_when_beer_is_inserted_correctly() throws UnirestException {
 		HttpResponse<String> putBeerType = Unirest.put(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "ipa").body(serializer.toJson(new TemperatureVO(10, 0))).asString();
@@ -78,6 +106,11 @@ public class ServiceITCase {
 		HttpResponse<String> putBeer = Unirest.put(beerUrl + "/{beerName}").routeParam("beerName", "skol")
 				.body(serializer.toJson(new BeerTypeVO("ipa"))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, putBeer.getStatus());
+
+		HttpResponse<String> getBeer = Unirest.get(beerUrl + "/{beerName}").routeParam("beerName", "skol").asString();
+		assertEquals(HttpStatus.OK_200, getBeer.getStatus());
+		assertEquals(new BeerVO("skol", new BeerTypeVO("ipa", new TemperatureVO(10, 0))), serializer.fromJson(getBeer.getBody(), BeerVO.class));
+
 	}
 
 	@Test
@@ -85,6 +118,12 @@ public class ServiceITCase {
 		HttpResponse<String> putBeerType = Unirest.put(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "dunkel").body(serializer.toJson(new TemperatureVO(3, 0))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, putBeerType.getStatus());
+
+		HttpResponse<String> getBeerType = Unirest.get(beerTypeUrl + "/{beerTypeName}")
+				.routeParam("beerTypeName", "dunkel").asString();
+		assertEquals(HttpStatus.OK_200, getBeerType.getStatus());
+		assertEquals(new BeerTypeVO("dunkel", new TemperatureVO(3, 0)),
+				serializer.fromJson(getBeerType.getBody(), BeerTypeVO.class));
 
 	}
 
@@ -98,6 +137,9 @@ public class ServiceITCase {
 				.body(new JSONObject("{\"invalid\": \"invalid\"}")).asString();
 		assertEquals(HttpStatus.BAD_REQUEST_400, putBeer.getStatus());
 
+		HttpResponse<String> getBeer = Unirest.get(beerUrl + "/{beerName}").routeParam("beerName", "skol").asString();
+		assertEquals(HttpStatus.NOT_FOUND_404, getBeer.getStatus());
+
 	}
 
 	@Test
@@ -105,6 +147,10 @@ public class ServiceITCase {
 		HttpResponse<String> putBeerType = Unirest.put(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "test").asString();
 		assertEquals(HttpStatus.BAD_REQUEST_400, putBeerType.getStatus());
+
+		HttpResponse<String> getBeerType = Unirest.get(beerTypeUrl + "{beerTypeName}")
+				.routeParam("beerTypeName", "test").asString();
+		assertEquals(HttpStatus.NOT_FOUND_404, getBeerType.getStatus());
 
 	}
 
@@ -118,9 +164,17 @@ public class ServiceITCase {
 				.body(serializer.toJson(new BeerTypeVO("ipa"))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, putBeer.getStatus());
 
+		HttpResponse<String> getBeer = Unirest.get(beerUrl + "/{beerName}").routeParam("beerName", "skol").asString();
+		assertEquals(HttpStatus.OK_200, getBeer.getStatus());
+		assertEquals(new BeerVO("skol", new BeerTypeVO("ipa", new TemperatureVO(10, 0))), serializer.fromJson(getBeer.getBody(), BeerVO.class));
+
 		HttpResponse<String> deleteBeer = Unirest.delete(beerUrl + "/{beerName}").routeParam("beerName", "skol")
 				.asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, deleteBeer.getStatus());
+
+		HttpResponse<String> getDeletedBeer = Unirest.get(beerUrl + "/{beerName}").routeParam("beerName", "skol")
+				.asString();
+		assertEquals(HttpStatus.NOT_FOUND_404, getDeletedBeer.getStatus());
 
 		HttpResponse<String> deleteAgainBeer = Unirest.delete(beerUrl + "/{beerName}").routeParam("beerName", "skol")
 				.asString();
@@ -134,9 +188,19 @@ public class ServiceITCase {
 				.routeParam("beerTypeName", "dunkel").body(serializer.toJson(new TemperatureVO(7, -10))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, putBeerType.getStatus());
 
+		HttpResponse<String> getBeerType = Unirest.get(beerTypeUrl + "/{beerTypeName}")
+				.routeParam("beerTypeName", "dunkel").asString();
+		assertEquals(HttpStatus.OK_200, getBeerType.getStatus());
+		assertEquals(new BeerTypeVO("dunkel", new TemperatureVO(7, -10)),
+				serializer.fromJson(getBeerType.getBody(), BeerTypeVO.class));
+
 		HttpResponse<String> deleteBeerType = Unirest.delete(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "dunkel").asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, deleteBeerType.getStatus());
+
+		HttpResponse<String> getDeletedBeerType = Unirest.get(beerTypeUrl + "{beerTypeName}")
+				.routeParam("beerTypeName", "dunkel").asString();
+		assertEquals(HttpStatus.NOT_FOUND_404, getDeletedBeerType.getStatus());
 
 		HttpResponse<String> deleteAgainBeerType = Unirest.delete(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "dunkel").asString();
@@ -174,6 +238,10 @@ public class ServiceITCase {
 				.body(serializer.toJson(new BeerTypeVO("ipa"))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, putBeer.getStatus());
 
+		HttpResponse<String> getBeer = Unirest.get(beerUrl + "/{beerName}").routeParam("beerName", "skol").asString();
+		assertEquals(HttpStatus.OK_200, getBeer.getStatus());
+		assertEquals(new BeerVO("skol", new BeerTypeVO("ipa", new TemperatureVO(10, 0))), serializer.fromJson(getBeer.getBody(), BeerVO.class));
+
 		HttpResponse<String> dunkelBeerType = Unirest.put(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "dunkel").body(serializer.toJson(new TemperatureVO(0, -5))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, dunkelBeerType.getStatus());
@@ -181,6 +249,11 @@ public class ServiceITCase {
 		HttpResponse<String> updateBeer = Unirest.post(beerUrl + "/{beerName}").routeParam("beerName", "skol")
 				.body(serializer.toJson(new BeerTypeVO("dunkel"))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, updateBeer.getStatus());
+
+		HttpResponse<String> getUpdatedBeer = Unirest.get(beerUrl + "/{beerName}").routeParam("beerName", "skol")
+				.asString();
+		assertEquals(HttpStatus.OK_200, getUpdatedBeer.getStatus());
+		assertEquals(new BeerVO("skol", new BeerTypeVO("dunkel", new TemperatureVO(0, -5))), serializer.fromJson(getUpdatedBeer.getBody(), BeerVO.class));
 	}
 
 	@Test
@@ -189,9 +262,21 @@ public class ServiceITCase {
 				.routeParam("beerTypeName", "ipa").body(serializer.toJson(new TemperatureVO(-9, -10))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, putBeerType.getStatus());
 
+		HttpResponse<String> getBeerType = Unirest.get(beerTypeUrl + "/{beerTypeName}").routeParam("beerTypeName", "ipa")
+				.asString();
+		assertEquals(HttpStatus.OK_200, getBeerType.getStatus());
+		assertEquals(new BeerTypeVO("ipa", new TemperatureVO(-9, -10)),
+				serializer.fromJson(getBeerType.getBody(), BeerTypeVO.class));
+
 		HttpResponse<String> updateBeerType = Unirest.post(beerTypeUrl + "/{beerTypeName}")
 				.routeParam("beerTypeName", "ipa").body(serializer.toJson(new TemperatureVO(10, 0))).asString();
 		assertEquals(HttpStatus.NO_CONTENT_204, updateBeerType.getStatus());
+
+		HttpResponse<String> getUpdatedBeerType = Unirest.get(beerTypeUrl + "/{beerTypeName}")
+				.routeParam("beerTypeName", "ipa").asString();
+		assertEquals(HttpStatus.OK_200, getUpdatedBeerType.getStatus());
+		assertEquals(new BeerTypeVO("ipa", new TemperatureVO(10, 0)),
+				serializer.fromJson(getUpdatedBeerType.getBody(), BeerTypeVO.class));
 
 	}
 
